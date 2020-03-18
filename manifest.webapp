@@ -1,0 +1,22 @@
+{
+  "name": "Program data downloader",
+  "description": "Data downloader for tracker/event program",
+  "version": "0.0.1",
+  "appType": "APP",
+  "launch_path": "/index.html",
+  "default_locale": "en",
+  "activities": {
+    "dhis": {
+      "href": "*"
+    }
+  },
+  "developer": {
+    "name": "Md Monjur Rahman",
+    "email": "monjur@icddrb.org",
+    "url": "http://www.icddrb.org",
+    "company": "icddr,b"
+  },
+  "icons": {
+    "48": "icon.png"
+  }
+}

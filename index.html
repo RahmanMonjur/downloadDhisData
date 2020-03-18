@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <title>DHIS2 program data downloader</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="src/favicon.ico">
+
+
+    <link type="text/css" rel="stylesheet"
+        href="../../../dhis-web-core-resource/dhis/light_blue/light_blue-b332a6918f.css" />
+    <link rel="stylesheet" href="../../../dhis-web-core-resource/bootstrap/3.0.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+    </link>
+    <link rel="stylesheet" type="text/css" href="css/jqplot.css">
+    </link>
+    <link rel="stylesheet" type="text/css" href="css/contextMenu.css">
+    </link>
+    <link rel="stylesheet" type="text/css" href="css/mystyle.css">
+    </link>
+
+
+</head>
+
+<body>
+    <div id="header"></div>
+    <div id="headerMessage"></div>
+
+    <div id="tabs" style="width:100%; margin-top: 46px; font-size: 10pt; ">
+        <div style="height:15px; width:100%; display:none; font-size:8pt; font-weight:bolder; color:green; padding-left:20px; text-align: left; vertical-align: top;"
+            id="divstat"></div>
+        <div>
+            <div class="dhisdiv" style="width: 25%;">
+                <h4 style="margin-top: 0px; margin-bottom: 5px;">Select program type</h4>
+                <table id="tableProgramReg" class="dhistable" style="width: 100%;">
+                    <tr>
+                        <td style="width:10%;"><input id="chkProgramRegtrue" type="radio" class="chkprogramreg"></td>
+                        <td style="width:90%;">With registration (tracker)</td>
+                    </tr>
+                    <tr>
+                        <td><input id="chkProgramRegfalse" type="radio" class="chkprogramreg"></td>
+                        <td>Without registration (event)</td>
+                    </tr>
+                </table>
+                <div style="height: 30px; margin-top: 10px;">
+                    <table id="tableTeiIncl" class="dhistable" style="width: 100%; display: none;">
+                        <tr>
+                            <td style="width:10%;">
+                                <input id="chkTeiIncl" type="checkbox"></td>
+                            </td>
+                            <td style="width: 90%;"> Include tracked entity attributes</td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="divprogram" style="display: none;">
+                    <h4 style="margin-top: 0px; margin-bottom: 5px;">Select program(s)</h4>
+                    <div style="height: 150px; overflow:auto;">
+                        <table id="tableProgram" class="dhistable" style="width: 100%;"></table>
+                    </div>
+                </div>
+            </div>
+            <div class="dhisdiv" style="width: 25%;">
+                <h4 style="margin-top: 0px; margin-bottom: 5px;">Select program stage(s)</h4>
+                <div id="divprogramstage" style="display: none;">
+                    <div>
+                        <table style="width:100%;" class="dhistable">
+                            <tr>
+                                <td style="width: 10%;">
+                                    <input type="checkbox" class="checkall"
+                                        onclick="javascript: selectAllProgramStages();">
+                                </td>
+                                <td style="width: 20%;">All</td>
+                                <td style="width: 60%;"></td>
+                                <td style="width: 10%;" align="right">
+                                    <img src="img/clear3.jpg" height="15px" width="15px"
+                                        style="border: 1px solig lightgray; cursor: pointer;"
+                                        onclick="javascript: clearAllProgramStages(this);">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="height: 240px; overflow:auto;">
+                        <table id="tableProgramStage" class="dhistable" style="width: 100%;"></table>
+                    </div>
+                </div>
+            </div>
+            <div class="dhisdiv" style="width: 45%;">
+                <h4 style="margin-top: 0px; margin-bottom: 5px;">Select data element(s)</h4>
+                <div id="divdataelement" style="display: none;">
+                    <div>
+                        <table style="width:100%;" class="dhistable">
+                            <tr>
+                                <td style="width: 5%;">
+                                    <input type="checkbox" class="checkall"
+                                        onclick="javascript: selectAllDataElements();">
+                                </td>
+                                <td style="width: 20%;">All</td>
+                                <td style="width: 65%; padding-right: 10px;" align="right">
+                                    <img src="img/clear3.jpg" height="15px" width="15px"
+                                        style="border: 1px solig lightgray; cursor: pointer;"
+                                        onclick="javascript: clearAllDataElements(this);">
+                                </td>
+                                <td style="width: 5%; font-weight: bold;" align="right" title="Select to encrypt the data element">
+                                    #
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="height: 240px; overflow:auto;">
+                        <table id="tableDataElement" class="dhistable" style="width: 100%;"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <div class="dhisdiv" style="width: 25%;">
+                <h4 style="margin-top: 0px; margin-bottom: 5px;">Select organisation unit group(s)</h4>
+                <div id="divorggroup">
+                    <div>
+                        <table style="width:100%;" class="dhistable">
+                            <tr>
+                                <td style="width: 10%;">
+                                    <input type="checkbox" class="checkall" onclick="javascript: selectAllOrgGroups();">
+                                </td>
+                                <td style="width: 20%;">All</td>
+                                <td style="width: 60%;"></td>
+                                <td style="width: 10%;" align="right">
+                                    <img src="img/clear3.jpg" height="15px" width="15px"
+                                        style="border: 1px solig lightgray; cursor: pointer;"
+                                        onclick="javascript: clearAllOrgGroups(this);">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="height: 240px; overflow:auto;">
+                        <table id="tableOrgGroup" class="dhistable" style="width: 100%;"></table>
+                    </div>
+                </div>
+            </div>
+            <div class="dhisdiv" style="width: 25%;">
+                <h4 style="margin-top: 0px; margin-bottom: 5px;">Select user group(s)</h4>
+                <div id="divusergroup">
+                    <div>
+                        <table style="width:100%;" class="dhistable">
+                            <tr>
+                                <td style="width: 10%;">
+                                    <input type="checkbox" class="checkall"
+                                        onclick="javascript: selectAllUserGroups();">
+                                </td>
+                                <td style="width: 20%;">All</td>
+                                <td style="width: 60%;"></td>
+                                <td style="width: 10%;" align="right">
+                                    <img src="img/clear3.jpg" height="15px" width="15px"
+                                        style="border: 1px solig lightgray; cursor: pointer;"
+                                        onclick="javascript: clearAllUserGroups(this);">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="height: 240px; overflow:auto;">
+                        <table id="tableUserGroup" class="dhistable" style="width: 100%;"></table>
+                    </div>
+                </div>
+            </div>
+            <div class="dhisdiv" style="width: 45%; position: relative;">
+                <h4 style="margin-top: 0px; margin-bottom: 5px;">Select filter criteria</h4>
+                <table style="width: 100%;" class="dhistable">
+                    <tr>
+                        <td style="width: 50%; height: 30px;" align="left">Enrolment created date from/between</td>
+                        <td style="width: 25%;" align="left">
+                            <input type="text" id="txtEnrDateFrom" placeholder="yyyy-mm-dd"
+                                style="width:95%; font-size:10pt; border:0; " class="datein" />
+                        </td>
+                        <td style="width: 25%;" align="left">
+                            <input type="text" id="txtEnrDateTo" placeholder="yyyy-mm-dd"
+                                style="width:95%; font-size:10pt; border:0; " class="datein" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; height: 30px;" align="left">Event created date from/between</td>
+                        <td style="width: 25%;" align="left">
+                            <input type="text" id="txtEventDateFrom" placeholder="yyyy-mm-dd"
+                                style="width:95%; font-size:10pt; border:0; " class="datein" />
+                        </td>
+                        <td style="width: 25%;" align="left">
+                            <input type="text" id="txtEventDateTo" placeholder="yyyy-mm-dd"
+                                style="width:95%; font-size:10pt; border:0; " class="datein" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="width: 100%;">
+                            <table id="tableFileFormat" style="width: 100%;" class="nocsstable">
+                                <tr>
+                                    <td style="width: 50%;">Select extension of the dataset</td>
+                                    <td style="width: 25%;">
+                                        <table style="width: 100%;" class="nocsstable"><!--css:ultrable-->
+                                            <tr>
+                                                <td style="width: 20%;"><input type="radio" id="chkfileformatCSV" class="chkfileformat"
+                                                        checked></td>
+                                                <td style="width: 80%;">CSV</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style="width: 25%;">
+                                        <table style="width: 100%;" class="nocsstable">
+                                            <tr>
+                                                <td style="width: 20%;"><input type="radio" id="chkfileformatJSON" class="chkfileformat"></td>
+                                                <td style="width: 80%;">JSON</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <!--
+                                    <tr>
+                                    <td style="width: 50%;"></td>
+                                    <td style="width: 25%;">
+                                        <table style="width: 100%;" class="nocsstable">
+                                            <tr>
+                                                <td style="width: 20%;"><input type="radio" class="chkfileformat"></td>
+                                                <td style="width: 80%;">XLS</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style="width: 25%;">
+                                        <table style="width: 100%;" class="nocsstable">
+                                            <tr>
+                                                <td style="width: 20%;"><input type="radio" class="chkfileformat"></td>
+                                                <td style="width: 80%;">XML</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                -->
+                                
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="width: 100%;">
+                            <table style="width: 100%;" id="tableDsFormat" class="nocsstable">
+                                <tr>
+                                    <td style="width: 50%;">Select dataset format</td>
+                                    <td style="width: 25%;">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td style="width: 20%;"><input type="radio" id='chkDsWide' class="chkdsformat" checked></td>
+                                                <td style="width: 80%;" title="Only for tracker capture program with similar type of program stages">Wide</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style="width: 25%;">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td style="width: 20%;"><input type="radio" id='chkDsLong' class="chkdsformat"></td>
+                                                <td style="width: 80%;">Long</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                            </table>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="width: 100%;">
+                            <table style="width: 100%;" id="tableSyntaxFormat" class="nocsstable">
+                                <tr>
+                                    <td style="width: 50%;">
+                                    <a style="color:navy; font-weight:blod; cursor: pointer; text-decoration: underline;" id="divsyntax">Get</a>
+                                    syntax for statistical tools
+                                    </td>
+                                    <td style="width: 25%;">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td style="width: 20%;"><input type="radio" id="chkspss" class="chksyntaxformat" checked></td>
+                                                <td style="width: 80%;">SPSS</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style="width: 25%;">
+                                        <table style="width: 100%;">
+                                            <tr>
+                                                <td style="width: 20%;"><input type="radio" id="chkstata" class="chksyntaxformat"></td>
+                                                <td style="width: 80%;">Stata</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                <div id="divGo"
+                style="position: absolute; bottom: 0; right: 0; font-weight: bold; color: navy; cursor: pointer;">
+                All set, go</div>
+                <div id="divSave"
+                style="position: absolute; bottom: 0; left:120px; font-weight: bold; color: navy; cursor: pointer;">
+                Save the settings</div>
+                <div id="divApply"
+                style="position: absolute; bottom: 0; left: 0; font-weight: bold; color: navy; cursor: pointer;">
+                Apply a settings
+                </div>
+                <input type="file" id="choosefile" style="display: none;">
+            </div>
+        </div>
+        <div>
+            <div class="dhisdiv" style="width: 50.7%; display: none;" id="divteiattr">
+                <h4 style="margin-top: 0px; margin-bottom: 5px;">Select tracked entity attribute(s)</h4>
+                <div style="width:100%;" >
+                    <table style="width:100%;" class="dhistable">
+                        <tr>
+                            <td style="width: 5%;">
+                                <input type="checkbox" class="checkall" onclick="javascript: selectAllTeiAttributes();">
+                            </td>
+                            <td style="width: 20%;">All</td>
+                            <td style="width: 60%; padding-right: 10px;" align="right">
+                                <img src="img/clear3.jpg" height="15px" width="15px"
+                                style="border: 1px solig lightgray; cursor: pointer;"
+                                onclick="javascript: clearAllTeiAttributes(this);">
+                            </td>
+                            <td style="width: 5%; font-weight: bold;" align="right" title="Select to encrypt the attribute">
+                                #
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="height: 240px; width: 100%; overflow:auto;">
+                    <table id="tableTeiAttr" class="dhistable" style="width: 100%;"></table>
+                </div>
+            </div>
+            <div style="width: 40%; display: none;"></div>
+        </div>
+        <br/>
+        <br/>
+    </div>
+    <br/>
+    <div class="hover_bkgr_fricc">
+        <span class="helper"></span>
+        <div>
+            <div class="popupCloseButton">X</div>
+            <h2 id="titTeis"></h2>
+            <table style="padding-top:20px; font-size: 8pt;" id="pTeis" class="Grid">
+
+            </table>
+        </div>
+    </div>
+    <div id="wait" style="display:none;border:2px solid black;position:absolute;top:50%;left:50%;padding:2px;"><img
+            src='img/loading.gif' /></div>
+</body>
+
+
+<script src="../../../dhis-web-core-resource/jquery/3.2.0/dist/jquery.js"></script>
+
+<script src="../../../dhis-web-core-resource/react/15.3.2/react-with-touch-tap-plugin.min.js"></script>
+<script src="../../../dhis-web-core-resource/lodash/4.15.0/lodash.min.js"></script>
+<script src="../../../dhis-web-core-resource/lodash-functional/1.0.1/lodash-functional.js"></script>
+<script src="../../../dhis-web-core-resource/babel-polyfill/6.20.0/dist/polyfill.min.js"></script>
+<script src="../../../dhis-web-core-resource/d2-ui/28.0.3/dist/header-bar.js"></script>
+
+<script src="js/jquery-ui.js"></script>
+<script src="js/jqplot.js"></script>
+<script src="js/jqplugin/jqplot.barRenderer.js"></script>
+<script src="js/jqplugin/jqplot.canvasAxisLabelRenderer.js"></script>
+<script src="js/jqplugin/jqplot.canvasAxisTickRenderer.js"></script>
+<script src="js/jqplugin/jqplot.canvasOverlay.js"></script>
+<script src="js/jqplugin/jqplot.canvasTextRenderer.js"></script>
+<script src="js/jqplugin/jqplot.categoryAxisRenderer.js"></script>
+<script src="js/jqplugin/jqplot.enhancedLegendRenderer.js"></script>
+<script src="js/jqplugin/jqplot.highlighter.js"></script>
+<script src="js/jqplugin/jqplot.pointLabels.js"></script>
+<script src="js/contextMenu.js"></script>
+<script src="js/myscript.js"></script>
+<script src="js/download.js"></script>
+<script src="js/csvExport.js"></script>
+
+<script>
+    //Global variables
+    BASEURL = '../../..'
+    BASEAPIURL = '../../../api/29';
+    jQuery(function () {
+        Dhis2HeaderBar.initHeaderBar(document.querySelector('#header'), BASEAPIURL, { noLoadingIndicator: true });
+    });
+</script>
+
+</html>
