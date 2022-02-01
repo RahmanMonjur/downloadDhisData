@@ -635,7 +635,7 @@ $(document).ready(function () {
                     var rd = '';
                     var vd = '';
                     for (var i = 0, len = deOptions.length; i < len; i++) {
-                        if (selectedSyntaxFormat === "spss") {
+                        if (selectedSyntaxFormat.toLowerCase() === "spss") {
                             rd += "VARIABLE LABELS \n";
                             rd += deOptions[i][0] + " '" + deOptions[i][1].replace(/'/g, '"') + "'. \n";
                             rd += "EXECUTE. \n";
@@ -646,7 +646,7 @@ $(document).ready(function () {
                                 vd += "EXECUTE. \n";
                                 vd += "\n";
                             }
-                        } else if (selectedSyntaxFormat === "stata") {
+                        } else if (selectedSyntaxFormat.toLowerCase() === "stata") {
                             rd += "label variable ";
                             rd += deOptions[i][0].toString().toLowerCase() + ' "' + deOptions[i][1].replace(/'/g, '"') + '" \n';
                             if (deOptions[i][2].length > 30) {
