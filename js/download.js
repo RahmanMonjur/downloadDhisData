@@ -36,6 +36,9 @@ $(document).ready(function () {
     $('body').on('focus', '.datein', function () {
         $(this).datepicker({ dateFormat: "yy-mm-dd" });
     });
+    $.ajaxSetup({
+        cache: false,
+    });
     selectedDsFormat = 'Wide';
     selectedFileFormat = 'CSV';
     selectedSyntaxFormat = 'spss';
@@ -98,7 +101,7 @@ $(document).ready(function () {
         })
     ];
 
-    $.when.apply($, reqsts).done(function () {
+    $.when.apply($, reqsts).then(function () {
         var tmpStages = [];
         var tmpTeiAttrs = [];
         var val0 = arguments[0][0];
@@ -245,9 +248,18 @@ $(document).ready(function () {
                 teiAttributesList.push(teiattr);
             }
         }
+        
 
+    }).then(function(){
+        // var size = 100; 
+        // var arrayOfArrays = [];
+        // for (var i=0; i<orgsList.length; i+=size) {
+        //     arrayOfArrays.push(orgsList.slice(i,i+size));
+        // }
+        // for (var j=0; j<arrayOfArrays.length; j++) {
+        //     getTeis(arrayOfArrays[j]);
+        // }
         getTeis(orgsList);
-
     });
 
 
@@ -515,7 +527,7 @@ $(document).ready(function () {
             dataType: "json",
         }).done(function (results) {
 
-            // Can be used when not depending on the download process of the dataset first
+            // Can be used when not depending on the download-of-the-dataset-first
             /*
             $.each(selectedPrograms, function (pindx, program) {
                 var pstagelist = $.grep(selectedProgramStages, function (v) {
@@ -599,7 +611,7 @@ $(document).ready(function () {
                 if (selectedDsFormat === "Wide") {
                     $.each(finalDeList, function (fdindx, de) {
                         var dename = '';
-                        var values = de.toString().toLowerCase() + " ";
+                        var values = de.toString() + " ";
                         var deuid = de.substr(de.length - 11);
                         var stguid = de.substring(0, 11);
                         var stgname = '';
@@ -629,6 +641,8 @@ $(document).ready(function () {
                                     //deOptions.push({ programStageUid:pstagen[0].programStageUid, programStageName:pstagen[0].programStageName, deUid: de.dataElementUid, deName: de.dataElementFormName, code: option.code, value: option.name.replace(/'/g, '') });
                                 });
                                 deOptions.push([de, dename, values]);
+                            } else {
+                                deOptions.push([de, dename, values]);
                             }
                         }
                     });
@@ -648,7 +662,7 @@ $(document).ready(function () {
                             }
                         } else if (selectedSyntaxFormat.toLowerCase() === "stata") {
                             rd += "label variable ";
-                            rd += deOptions[i][0].toString().toLowerCase() + ' "' + deOptions[i][1].replace(/'/g, '"') + '" \n';
+                            rd += deOptions[i][0].toString() + ' "' + deOptions[i][1].replace(/'/g, '"') + '" \n';
                             if (deOptions[i][2].length > 30) {
                                 vd += "label define " + deOptions[i][2].toString().replace(/'/g, '"') + "\n";
                             }
@@ -677,7 +691,7 @@ $(document).ready(function () {
                 } else {
                     $.each(finalDeList, function (fdindx, de) {
                         var dename = '';
-                        var values = de.toString().toLowerCase() + " ";
+                        var values = de.toString() + " ";
                         var deuid = de.substr(de.length - 11);
                         var stguid = de.substring(0, 11);
                         var stgname = '';
@@ -1003,38 +1017,51 @@ function getFilteredEventList(events) {
     return stagefilteredeventlist;
 }
 
-function getTeis(arr) {
-    var promises = [];
-    $("#divstat").html("Some background tasks are still going on, however, can continue with other works.");
-    $("#divstat").show();
-    $.each(arr, function (indx, obj) {
-        var p = $.when($.ajax({
+function getEnrollsAjax(org){
+    var v = [
+        $.ajax({
             type: "GET",
-            url: "../../../api/trackedEntityInstances.json?paging=false&fields=orgUnit,trackedEntityInstance,deleted,attributes,status&ou=" + obj.orgUnitUid,
+            url: "../../../api/enrollments.json?paging=false&fields=enrollment,program,trackedEntityInstance,orgUnit,enrollmentDate,status,deleted&ou=" + org,
             contentType: "application/json; charset=utf-8",
             data: '',
             dataType: "json"
-        }),
-            $.ajax({
-                type: "GET",
-                url: "../../../api/enrollments.json?paging=false&fields=enrollment,program,trackedEntityInstance,orgUnit,enrollmentDate,status,deleted&ou=" + obj.orgUnitUid,
-                contentType: "application/json; charset=utf-8",
-                data: '',
-                dataType: "json"
-            })).done(function (val1, val2) {
-                for (var j = 0, len1 = val1[0].trackedEntityInstances.length; j < len1; j++) {
-                    if (val1[0].trackedEntityInstances[j].deleted === false) {
+        })
+    ];
+    return v;
+}
+
+function getTeisAjax(org){
+    var v = [
+        $.ajax({
+            type: "GET",
+            url: "../../../api/trackedEntityInstances.json?paging=false&fields=orgUnit,trackedEntityInstance,deleted,attributes,status&ou=" + org,
+            contentType: "application/json; charset=utf-8",
+            data: '',
+            dataType: "json"
+        })
+    ];
+    return v;
+}
+
+function getTeis(arr) {
+    var promises = [];
+    $("#divstat").html("Some background tasks are still going on, but you can continue with other work.");
+    $("#divstat").show();
+    $.each(arr, function (indx, obj) {
+        var p = $.when.apply($, getTeisAjax(obj.orgUnitUid)).done(function (val1) {
+            for (var j = 0, len1 = val1.trackedEntityInstances.length; j < len1; j++) {
+                if (val1.trackedEntityInstances[j].deleted === false) {
                         var tei = {
-                            teiUid: val1[0].trackedEntityInstances[j].trackedEntityInstance,
-                            orgUnitUid: val1[0].trackedEntityInstances[j].orgUnit,
-                            teiVal: val1[0].trackedEntityInstances[j].attributes
+                            teiUid: val1.trackedEntityInstances[j].trackedEntityInstance,
+                            orgUnitUid: val1.trackedEntityInstances[j].orgUnit,
+                            teiVal: val1.trackedEntityInstances[j].attributes
                         };
                         trackedEntityInstancesList.push(tei);
 
-                        $.each(val1[0].trackedEntityInstances[j].attributes, function (tvalindx, tval) {
+                        $.each(val1.trackedEntityInstances[j].attributes, function (tvalindx, tval) {
                             var tei = {
-                                teiUid: val1[0].trackedEntityInstances[j].trackedEntityInstance,
-                                orgUid: val1[0].trackedEntityInstances[j].orgUnit,
+                                teiUid: val1.trackedEntityInstances[j].trackedEntityInstance,
+                                orgUid: val1.trackedEntityInstances[j].orgUnit,
                                 teiAttrUid: tval.attribute,
                                 teiAttrValue: tval.value
                             };
@@ -1042,6 +1069,7 @@ function getTeis(arr) {
                         });
                     }
                 }
+                /*
                 for (var j = 0, len1 = val2[0].enrollments.length; j < len1; j++) {
                     if (val2[0].enrollments[j].deleted === false) {
                         var enrol = {
@@ -1055,15 +1083,48 @@ function getTeis(arr) {
                         enrollmentsList.push(enrol);
                     }
                 }
+                */
             });
         promises.push(p);
+        //process(obj.orgUnitUid);
+    });
+    successfulAjaxCalls(promises).then(function (results) {
+        getEnrolls(orgsList);
+        
+    });
+    
+}
 
+function getEnrolls(arr) {
+    var promises = [];
+    $("#divstat").html("Some background tasks are still going on, but you can continue with other work.");
+    $("#divstat").show();
+    $.each(arr, function (indx, obj) {
+        var p = $.when.apply($, getEnrollsAjax(obj.orgUnitUid)).done(function (val2) {
+            for (var j = 0, len1 = val2.enrollments.length; j < len1; j++) {
+                if (val2.enrollments[j].deleted === false) {
+                    var enrol = {
+                        enrolUid: val2.enrollments[j].enrollment,
+                        enrolDate: val2.enrollments[j].enrollmentDate.substring(0, 10),
+                        programUid: val2.enrollments[j].program,
+                        teiUid: val2.enrollments[j].trackedEntityInstance,
+                        orgUnitUid: val2.enrollments[j].orgUnit,
+                        enrolStatus: val2.enrollments[j].status
+                    };
+                    enrollmentsList.push(enrol);
+                }
+            }
+
+        });
+        promises.push(p);
+        //process(obj.orgUnitUid);
     });
     successfulAjaxCalls(promises).then(function (results) {
         setTimeout(function () {
             $("#divstat").hide();
         }, 1000);
     });
+    
 }
 
 // function is executed when clicked on Go button
@@ -1077,12 +1138,11 @@ function getAllEvents(arrOrg) {
         $.each(arrOrg, function (indx, org) {
             var p = $.ajax({
                 type: "GET",
-                url: "../../../api/events.json?paging=false&program=" + program.programUid + "&orgUnit=" + org.orgUnitUid + "&fields=program,event,programStage,orgUnit,trackedEntityInstance,enrollment,enrollmentStatus,status,orgUnitName,eventDate,deleted,storedBy,dataValues&order=program:ASC,programStage:ASC,eventDate:ASC",
+                url: "../../../api/events.json?paging=false&program=" + program.programUid + "&orgUnit=" + org.orgUnitUid + "&fields=program,event,programStage,orgUnit,trackedEntityInstance,enrollment,enrollmentStatus,status,orgUnitName,eventDate,deleted,storedBy,dataValues&order=program:ASC,eventDate:ASC",
                 contentType: "application/json; charset=utf-8",
                 data: '',
                 dataType: "json"
-            })
-                .done(function (val) {
+            }).done(function (val) {
                     if (val.events.length > 0) {
                         var eventdesval = []
                         $.each(val.events, function (progindx, event) {
@@ -1139,12 +1199,9 @@ function getAllEvents(arrOrg) {
         });
     });
 
-    successfulAjaxCalls(promises).then(function (results) {
-        setTimeout(function () {
-            $("#divstat").hide();
-            $("#wait").css("display", "none");
-        }, 1000);
+    
 
+    successfulAjaxCalls(promises).then(function (results) {
         var programreg = $('input:radio.chkprogramreg:checked').attr("id").replace("chkProgramReg", "");
         var filteredeventlist = getFilteredEventList(eventsList);
         if (programreg === "true") {
@@ -1152,15 +1209,10 @@ function getAllEvents(arrOrg) {
             var teilist = getFilteredTeiList();
             if (teilist.length > 0) {
                 $.each(filteredeventlist, function (progindx, event) {
-                    var teifound = "";
-                    $.each(teilist, function (progindx, tei) {
-                        if (event.teiUid === tei.teiUid) {
-                            teifound = "Y";
-                            return false;
-                        }
-                        return true;
+                    var teiexists = $.grep(teilist, function (v) {
+                        return v.teiUid === event.teiUid;
                     });
-                    if (teifound === "Y") {
+                    if (teiexists.length > 0) {
                         teieventlist.push(event);
                     }
                 });
@@ -1184,7 +1236,10 @@ function getAllEvents(arrOrg) {
                 arrayToJson(restarr);
             }
         }
-
+        setTimeout(function () {
+            $("#divstat").hide();
+            $("#wait").css("display", "none");
+        }, 1000);
     });
 
 

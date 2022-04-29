@@ -36,7 +36,7 @@ function formatdate(elementId) {
     var yr;
     if (dt.length > 0) {
         dt = dt.toUpperCase();
-        dt = dt.replace('/', '').replace('/', '').replace('.', '').replace('.', '').replace('-', '').replace('-', '');
+        dt = dt.replace(/'/g, '').replace(/./g, '').replace(/-/g, '');
         dt = dt.replace('JAN', '01').replace('FEB', '02').replace('MAR', '03').replace('APR', '04').replace('MAY', '05').replace('JUN', '06').replace('JUL', '07').replace('AUG', '08').replace('SEP', '09').replace('OCT', '10').replace('NOV', '11').replace('DEC', '12');
         day = dt.substr(0, 2);
         mon = dt.substr(2, 2);
@@ -91,6 +91,47 @@ function formatTime(elementId) {
         document.getElementById(elementId).value = hr + ':' + min;
     }
 }
+function formatdateYYYYMMDD(elementId) {
+    var fdt;
+    var dt = elementId.target.value;
+    var day;
+    var mon;
+    var yr;
+    if (dt.length > 0) {
+        dt = dt.toUpperCase();
+        dt = dt.replace(/[/.-]/g, '');
+        dt = dt.replace('JAN', '01').replace('FEB', '02').replace('MAR', '03').replace('APR', '04').replace('MAY', '05').replace('JUN', '06').replace('JUL', '07').replace('AUG', '08').replace('SEP', '09').replace('OCT', '10').replace('NOV', '11').replace('DEC', '12');
+        if (dt.length == 6) {
+            yr = dt.substr(0, 2);
+            if (yr > 30) {
+                dt = '19' + dt;
+            }
+            else {
+                dt = '20' + dt;
+            }
+        }
+        yr = dt.substr(0, 4);
+        mon = dt.substr(4, 2);
+        day = dt.substr(6);
+        if ((dt.length < 6) || (dt.length > 10)) {
+            alert("Invalid Date\nPlease Re-Enter");
+            elementId.target.focus();
+        }
+        else if (parseInt(day) >= 32) {
+            alert("Invalid Date\nPlease Re-Enter");
+            elementId.target.focus();
+        }
+
+        else if (parseInt(mon) > 12) {
+            alert("Invalid Date\nPlease Re-Enter");
+            elementId.target.focus();
+        }
+        else {
+            fdt = yr + '-' + mon + '-' + day;
+            elementId.target.value = fdt;
+        }
+    }
+}
 function formatDateTime(elementId) {
     var datetime = document.getElementById(elementId).value.split(" ");
     var dt = datetime[0].toUpperCase();
@@ -102,7 +143,7 @@ function formatDateTime(elementId) {
     var fdt;
     if (datetime[0].length > 0) {
 
-        dt = dt.replace('/', '').replace('/', '').replace('.', '').replace('.', '').replace('-', '').replace('-', '');
+        dt = dt.replace(/'/g, '').replace(/./g, '').replace(/-/g, '');
         dt = dt.replace('JAN', '01').replace('FEB', '02').replace('MAR', '03').replace('APR', '04').replace('MAY', '05').replace('JUN', '06').replace('JUL', '07').replace('AUG', '08').replace('SEP', '09').replace('OCT', '10').replace('NOV', '11').replace('DEC', '12');
         day = dt.substr(0, 2);
         mon = dt.substr(2, 2);
@@ -285,7 +326,7 @@ $(document).ready(function () {
     $('.datein').datepicker({ dateFormat: 'yy-mm-dd' });
     $('.dategr').datepicker({ dateFormat: 'yy-mm-dd' });
     $('.datein').change(function (e) {
-        //formatdate(e);
+        formatdateYYYYMMDD(e);
     });
     $("#expcol").click(function () {
         if ($("#expcol").text() == "<<") {

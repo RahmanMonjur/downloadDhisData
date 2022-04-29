@@ -7,14 +7,11 @@
     <link rel="icon" type="image/x-icon" href="src/favicon.ico">
 
 
-    <link type="text/css" rel="stylesheet"
-        href="../../../dhis-web-core-resource/dhis/light_blue/light_blue-b332a6918f.css" />
-    <link rel="stylesheet" href="../../../dhis-web-core-resource/bootstrap/3.0.2/css/bootstrap.min.css" />
+    
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
     </link>
     <link rel="stylesheet" type="text/css" href="css/jqplot.css">
-    </link>
-    <link rel="stylesheet" type="text/css" href="css/contextMenu.css">
     </link>
     <link rel="stylesheet" type="text/css" href="css/mystyle.css">
     </link>
@@ -84,7 +81,7 @@
                     </div>
                 </div>
             </div>
-            <div class="dhisdiv" style="width: 45%;">
+            <div class="dhisdiv" style="width: 40%;">
                 <h4 style="margin-top: 0px; margin-bottom: 5px;">Select data element(s)</h4>
                 <div id="divdataelement" style="display: none;">
                     <div>
@@ -100,7 +97,7 @@
                                         style="border: 1px solig lightgray; cursor: pointer;"
                                         onclick="javascript: clearAllDataElements(this);">
                                 </td>
-                                <td style="width: 5%; font-weight: bold;" align="right" title="Select to encrypt the data element">
+                                <td style="width: 10%; font-weight: bold;" align="center" title="Select to encrypt the data element">
                                     #
                                 </td>
                             </tr>
@@ -163,7 +160,7 @@
                     </div>
                 </div>
             </div>
-            <div class="dhisdiv" style="width: 45%; position: relative;">
+            <div class="dhisdiv" style="width: 40%; position: relative;">
                 <h4 style="margin-top: 0px; margin-bottom: 5px;">Select filter criteria</h4>
                 <table style="width: 100%;" class="dhistable">
                     <tr>
@@ -306,7 +303,7 @@
             </div>
         </div>
         <div>
-            <div class="dhisdiv" style="width: 50.7%; display: none;" id="divteiattr">
+            <div class="dhisdiv" style="width: 50.8%; display: none;" id="divteiattr">
                 <h4 style="margin-top: 0px; margin-bottom: 5px;">Select tracked entity attribute(s)</h4>
                 <div style="width:100%;" >
                     <table style="width:100%;" class="dhistable">
@@ -320,7 +317,7 @@
                                 style="border: 1px solig lightgray; cursor: pointer;"
                                 onclick="javascript: clearAllTeiAttributes(this);">
                             </td>
-                            <td style="width: 5%; font-weight: bold;" align="right" title="Select to encrypt the attribute">
+                            <td style="width: 10%; font-weight: bold; padding-right: 10px;" align="right" title="Select to encrypt the attribute">
                                 #
                             </td>
                         </tr>
@@ -351,29 +348,21 @@
 </body>
 
 
-<script src="../../../dhis-web-core-resource/jquery/3.2.0/dist/jquery.js"></script>
 
-<script src="../../../dhis-web-core-resource/react/15.3.2/react-with-touch-tap-plugin.min.js"></script>
-<script src="../../../dhis-web-core-resource/lodash/4.15.0/lodash.min.js"></script>
-<script src="../../../dhis-web-core-resource/lodash-functional/1.0.1/lodash-functional.js"></script>
-<script src="../../../dhis-web-core-resource/babel-polyfill/6.20.0/dist/polyfill.min.js"></script>
-<script src="../../../dhis-web-core-resource/d2-ui/28.0.3/dist/header-bar.js"></script>
 
+
+<script src="js/jquery.js"></script>
 <script src="js/jquery-ui.js"></script>
-<script src="js/jqplot.js"></script>
-<script src="js/jqplugin/jqplot.barRenderer.js"></script>
-<script src="js/jqplugin/jqplot.canvasAxisLabelRenderer.js"></script>
-<script src="js/jqplugin/jqplot.canvasAxisTickRenderer.js"></script>
-<script src="js/jqplugin/jqplot.canvasOverlay.js"></script>
-<script src="js/jqplugin/jqplot.canvasTextRenderer.js"></script>
-<script src="js/jqplugin/jqplot.categoryAxisRenderer.js"></script>
-<script src="js/jqplugin/jqplot.enhancedLegendRenderer.js"></script>
-<script src="js/jqplugin/jqplot.highlighter.js"></script>
-<script src="js/jqplugin/jqplot.pointLabels.js"></script>
-<script src="js/contextMenu.js"></script>
 <script src="js/myscript.js"></script>
 <script src="js/download.js"></script>
 <script src="js/csvExport.js"></script>
+
+<script src="js/react-with-touch-tap-plugin.min.js"></script>
+<script src="js/lodash.min.js"></script>
+<script src="js/lodash-functional.js"></script>
+<script src="js/polyfill.min.js"></script>
+
+<script src="js/header-bar.js"></script>
 
 <script>
     //Global variables
